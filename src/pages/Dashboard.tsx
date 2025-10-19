@@ -1,4 +1,5 @@
 import { StatCard } from "@/components/StatCard";
+import { SmartTriageWidget } from "@/components/SmartTriageWidget";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Calendar, IndianRupee, AlertCircle, Activity, CheckCircle } from "lucide-react";
@@ -131,9 +132,15 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Queue and Appointments */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
+      {/* AI Smart Triage */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <SmartTriageWidget />
+        </div>
+
+        {/* Queue and Appointments */}
+        <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Live Queue</h3>
             <Badge variant="outline" className="text-accent border-accent">
@@ -196,6 +203,7 @@ const Dashboard = () => {
             ))}
           </div>
         </Card>
+        </div>
       </div>
     </div>
   );
