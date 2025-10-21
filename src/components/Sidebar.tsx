@@ -9,7 +9,9 @@ import {
   Bell,
   Activity,
   Menu,
-  X
+  X,
+  Package,
+  TestTube
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
@@ -23,6 +25,8 @@ const navItems = [
   { to: "/appointments", icon: Calendar, label: "Appointments" },
   { to: "/queue", icon: Activity, label: "Queue" },
   { to: "/prescriptions", icon: FileText, label: "Prescriptions" },
+  { to: "/inventory", icon: Package, label: "Inventory" },
+  { to: "/lab-results", icon: TestTube, label: "Lab Results" },
   { to: "/insurance", icon: Shield, label: "Insurance" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/notifications", icon: Bell, label: "Notifications" },

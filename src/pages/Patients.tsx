@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { mockPatients } from "@/lib/mockData";
-import { Search, Plus, Shield, ShieldCheck, Phone, Mail, Clock } from "lucide-react";
+import { Search, Plus, Shield, ShieldCheck, Phone, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { PatientHistoryTimeline } from "@/components/PatientHistoryTimeline";
 
 const Patients = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,8 +42,9 @@ const Patients = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredPatients.map((patient) => (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {filteredPatients.map((patient) => (
           <Card 
             key={patient.id} 
             className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer group"
@@ -116,7 +118,12 @@ const Patients = () => {
               </div>
             )}
           </Card>
-        ))}
+          ))}
+        </div>
+        
+        <div className="lg:col-span-1">
+          <PatientHistoryTimeline />
+        </div>
       </div>
     </div>
   );
