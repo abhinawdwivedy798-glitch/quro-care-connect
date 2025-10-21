@@ -4,43 +4,47 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Mic, FileText, Plus, Printer, Send, Sparkles, Activity, Pill, CheckCircle2, AlertCircle } from "lucide-react";
+import { Mic, FileText, Plus, Printer, Send, Sparkles, Activity, Pill, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { analyzeClinicalNotes } from "@/lib/geminiApi";
 
 const Prescriptions = () => {
   const [prescription, setPrescription] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleVoiceInput = () => {
     setIsRecording(!isRecording);
     if (!isRecording) {
-      toast.success("Voice recording started - AI Medical Scribe active");
-      // Simulate voice input with AI analysis
+      toast.success("Voice recording started - Real AI Medical Scribe active");
+      // Simulate voice input
       setTimeout(() => {
         const mockTranscript = "Patient complains of persistent cough and mild fever for 3 days. Chest clear on auscultation. Throat mildly inflamed.";
         setPrescription(mockTranscript);
         setIsRecording(false);
-        toast.success("Voice input processed");
-        
-        // AI Medical Scribe Analysis
-        setTimeout(() => {
-          setAiAnalysis({
-            symptoms: ["Persistent cough", "Mild fever (3 days)", "Throat inflammation"],
-            possibleDiagnosis: ["Upper Respiratory Tract Infection", "Viral Pharyngitis"],
-            confidence: 87,
-            suggestedMedications: [
-              { name: "Tab Azithromycin 500mg", dosage: "OD for 3 days", reason: "Bacterial coverage" },
-              { name: "Syp Cough suppressant", dosage: "10ml TDS", reason: "Symptom relief" },
-              { name: "Tab Paracetamol 650mg", dosage: "SOS for fever", reason: "Fever management" }
-            ],
-            recommendedTests: ["Throat swab", "CBC (if fever persists)"],
-            redFlags: [],
-            followUp: "3 days or if symptoms worsen"
-          });
-          toast.success("AI analysis complete!");
-        }, 1500);
+        toast.success("Voice input processed - Analyzing with Gemini AI...");
+        analyzeWithAI(mockTranscript);
       }, 2500);
+    }
+  };
+
+  const analyzeWithAI = async (notes: string) => {
+    if (!notes.trim()) {
+      toast.error("Please enter clinical notes first");
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const analysis = await analyzeClinicalNotes(notes);
+      setAiAnalysis(analysis);
+      toast.success("Real AI analysis complete! Powered by Gemini");
+    } catch (error) {
+      console.error("AI Analysis error:", error);
+      toast.error("AI analysis failed. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -88,9 +92,29 @@ const Prescriptions = () => {
               onClick={handleVoiceInput}
               className={`w-full ${isRecording ? "bg-destructive hover:bg-destructive/90" : "bg-gradient-to-r from-primary to-accent"}`}
               size="lg"
+              disabled={isAnalyzing}
             >
               <Mic className={`w-4 h-4 mr-2 ${isRecording && "animate-pulse"}`} />
               {isRecording ? "Stop Recording" : "Start Voice Input"}
+            </Button>
+
+            <Button
+              onClick={() => analyzeWithAI(prescription)}
+              className="w-full"
+              variant="outline"
+              disabled={isAnalyzing || !prescription.trim()}
+            >
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Analyzing with Gemini AI...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Analyze with Real AI
+                </>
+              )}
             </Button>
 
             <div className="grid grid-cols-1 gap-4">
@@ -140,11 +164,17 @@ const Prescriptions = () => {
             )}
           </div>
 
-          {!aiAnalysis ? (
+          {isAnalyzing ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-12 h-12 mx-auto mb-3 animate-spin text-primary" />
+              <p className="font-medium mb-2">Real AI Analysis in Progress...</p>
+              <p className="text-sm text-muted-foreground">Powered by Google Gemini 2.5 Flash</p>
+            </div>
+          ) : !aiAnalysis ? (
             <div className="text-center py-12 text-muted-foreground">
               <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p className="font-medium mb-2">AI Medical Scribe Ready</p>
-              <p className="text-sm">Start voice input to see real-time AI-powered clinical insights, diagnosis suggestions, and medication recommendations</p>
+              <p className="font-medium mb-2">Real AI Medical Scribe Ready</p>
+              <p className="text-sm">Use voice input or type clinical notes, then click "Analyze with Real AI" to get instant AI-powered insights from Google Gemini</p>
             </div>
           ) : (
             <div className="space-y-4">
